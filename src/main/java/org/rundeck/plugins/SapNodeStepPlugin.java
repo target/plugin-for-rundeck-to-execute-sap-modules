@@ -1,135 +1,161 @@
 package org.rundeck.plugins;
 
-import com.dtolabs.rundeck.core.common.INodeEntry;
-import com.dtolabs.rundeck.core.plugins.configuration.StringRenderingConstants;
+import com.dtolabs.rundeck.core.execution.workflow.steps.FailureReason;
+import com.dtolabs.rundeck.core.execution.workflow.steps.StepException;
 import com.dtolabs.rundeck.core.plugins.Plugin;
+import com.dtolabs.rundeck.core.plugins.configuration.Describable;
+import com.dtolabs.rundeck.core.plugins.configuration.Description;
+import com.dtolabs.rundeck.core.plugins.configuration.StringRenderingConstants;
 import com.dtolabs.rundeck.plugins.ServiceNameConstants;
 import com.dtolabs.rundeck.plugins.descriptions.PluginDescription;
-import com.dtolabs.rundeck.plugins.descriptions.PluginProperty;
-import com.dtolabs.rundeck.plugins.descriptions.RenderingOption;
-import com.dtolabs.rundeck.plugins.descriptions.RenderingOptions;
-import com.dtolabs.rundeck.plugins.descriptions.SelectValues;
-import com.dtolabs.rundeck.plugins.step.GeneratedScript;
-import com.dtolabs.rundeck.plugins.step.GeneratedScriptBuilder;
 import com.dtolabs.rundeck.plugins.step.PluginStepContext;
-import com.dtolabs.rundeck.plugins.step.RemoteScriptNodeStepPlugin;
+import com.dtolabs.rundeck.plugins.step.StepPlugin;
+import com.dtolabs.rundeck.plugins.util.DescriptionBuilder;
+import com.dtolabs.rundeck.plugins.util.PropertyBuilder;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import org.slf4j.LoggerFactory;
+import org.rundeck.plugins.sap_connector.SapManager;
 
-@Plugin(service = ServiceNameConstants.RemoteScriptNodeStep, name = SapNodeStepPlugin.SERVICE_PROVIDER_NAME)
-@PluginDescription(title = "SAP Node Step", description = "Connects to SAP systems and executes jobs")
-public class SapNodeStepPlugin implements RemoteScriptNodeStepPlugin {
+@Plugin(name = SapNodeStepPlugin.SERVICE_PROVIDER_NAME, service = ServiceNameConstants.WorkflowStep)
+@PluginDescription(title = SapNodeStepPlugin.PLUGIN_NAME, description = SapNodeStepPlugin.PLUGIN_DESCRIPTION)
+public class SapNodeStepPlugin implements StepPlugin, Describable {
+  public static final String SERVICE_PROVIDER_NAME = "SapNodeStepPlugin";
+  public static final String PLUGIN_NAME = "SAP Node Step";
+  public static final String PLUGIN_DESCRIPTION = "Connects to SAP systems and executes jobs";
 
-    public static final String SERVICE_PROVIDER_NAME = "SapNodeStepPlugin";
-    private static final String connectorAddress = "https://binrepo.target.com/artifactory/ti-dsco/rundeck/artifacts/sap-connector";
-    private static final String connectorName = "sap-connector";
-    private static final String connectorVersion = "v1.2";
-    private String SAP_JCO_PASSWORD = "";
+  public Description getDescription() {
+    return DescriptionBuilder.builder()
+      .name(SERVICE_PROVIDER_NAME)
+      .title(PLUGIN_NAME)
+      .description(PLUGIN_DESCRIPTION)
+      .property(PropertyBuilder.builder()
+        .name("sapExecutionTarget")
+        .string("sapExecutionTarget")
+        .title("Execution Target")
+        .description("The application server host to connect to")
+        .renderingOption(StringRenderingConstants.GROUPING, "SECONDARY")
+        .renderingOption(StringRenderingConstants.GROUP_NAME, "Configure the destination server")
+        .renderingOption("displayType", StringRenderingConstants.DisplayType.SINGLE_LINE)
+        .required(true)
+        .build()
+      )
+      .property(PropertyBuilder.builder()
+        .name("sapSystemNumber")
+        .string("sapSystemNumber")
+        .title("System Number")
+        .description("The system number of the SAP instance")
+        .renderingOption(StringRenderingConstants.GROUPING, "SECONDARY")
+        .renderingOption(StringRenderingConstants.GROUP_NAME, "Configure the destination server")
+        .renderingOption("displayType", StringRenderingConstants.DisplayType.SINGLE_LINE)
+        .required(true)
+        .build()
+      )
+      .property(PropertyBuilder.builder()
+        .name("sapClient")
+        .string("sapClient")
+        .title("Client")
+        .description("Specifies the SAP client")
+        .renderingOption(StringRenderingConstants.GROUPING, "SECONDARY")
+        .renderingOption(StringRenderingConstants.GROUP_NAME, "Configure the destination server")
+        .required(true)
+        .build()
+      )
+      .property(PropertyBuilder.builder()
+        .name("sapUser")
+        .string("sapUser")
+        .title("User")
+        .description("User authenticating to the SAP destination")
+        .renderingOption(StringRenderingConstants.GROUPING, "SECONDARY")
+        .renderingOption(StringRenderingConstants.GROUP_NAME, "Configure the destination server")
+        .renderingOption("displayType", StringRenderingConstants.DisplayType.SINGLE_LINE)
+        .required(true)
+        .build()
+      )
+      .property(PropertyBuilder.builder()
+        .name("sapClientLanguage")
+        .string("sapClientLanguage")
+        .title("Client Language")
+        .description("Client Language f.e. en, fr")
+        .renderingOption(StringRenderingConstants.GROUPING, "SECONDARY")
+        .renderingOption(StringRenderingConstants.GROUP_NAME, "Configure the destination server")
+        .renderingOption("displayType", StringRenderingConstants.DisplayType.SINGLE_LINE)
+        .required(true)
+        .build()
+      )
+      .property(PropertyBuilder.builder()
+        .name("sapPoolCapacity")
+        .string("sapPoolCapacity")
+        .title("Pool Capacity")
+        .description("Pool Capacity of the connection f.e. 3")
+        .renderingOption(StringRenderingConstants.GROUPING, "SECONDARY")
+        .renderingOption(StringRenderingConstants.GROUP_NAME, "Configure the destination server")
+        .renderingOption("displayType", StringRenderingConstants.DisplayType.SINGLE_LINE)
+        .required(true)
+        .build()
+      )
+      .property(PropertyBuilder.builder()
+        .name("sapPeakLimit")
+        .string("sapPeakLimit")
+        .title("Peak Limit")
+        .description("Peak limit of the connection f.e. 10")
+        .renderingOption(StringRenderingConstants.GROUPING, "SECONDARY")
+        .renderingOption(StringRenderingConstants.GROUP_NAME, "Configure the destination server")
+        .renderingOption("displayType", StringRenderingConstants.DisplayType.SINGLE_LINE)
+        .required(true)
+        .build()
+      )
+      .property(PropertyBuilder.builder()
+        .name("sapSourceJobName")
+        .string("sapSourceJobName")
+        .title("Source Job Name")
+        .description("Source job name")
+        .renderingOption(StringRenderingConstants.GROUPING, "SECONDARY")
+        .renderingOption(StringRenderingConstants.GROUP_NAME, "Copy a pre-defined SAP Job and Run")
+        .renderingOption("displayType", StringRenderingConstants.DisplayType.SINGLE_LINE)
+        .required(true)
+        .build()
+      )
+      .property(PropertyBuilder.builder()
+        .name("sapSourceJobCount")
+        .string("sapSourceJobCount")
+        .title("Source Job Count")
+        .description("Source job id")
+        .renderingOption(StringRenderingConstants.GROUPING, "SECONDARY")
+        .renderingOption(StringRenderingConstants.GROUP_NAME, "Copy a pre-defined SAP Job and Run")
+        .renderingOption("displayType", StringRenderingConstants.DisplayType.SINGLE_LINE)
+        .required(true)
+        .build()
+      )
+      .property(PropertyBuilder.builder()
+        .name("sapNewJobName")
+        .string("sapNewJobName")
+        .title("New Job Name")
+        .description("Name of new copied job")
+        .renderingOption(StringRenderingConstants.GROUPING, "SECONDARY")
+        .renderingOption(StringRenderingConstants.GROUP_NAME, "Copy a pre-defined SAP Job and Run")
+        .renderingOption("displayType", StringRenderingConstants.DisplayType.SINGLE_LINE)
+        .required(true)
+        .build()
+      )
+      .build();
+  }
 
-    @PluginProperty(title = "Execution Target", description = "The application server host to conect to", required = true)
-    @RenderingOptions({
-            @RenderingOption(key = StringRenderingConstants.GROUPING, value = "SECONDARY"),
-            @RenderingOption(key = StringRenderingConstants.GROUP_NAME, value = "Configure the destination server")
-    })
-    String sapExecutionTarget;
-
-    @PluginProperty(title = "System Number", description = "The system number of the SAP instance", required = true)
-    @RenderingOptions({
-            @RenderingOption(key = StringRenderingConstants.GROUPING, value = "SECONDARY"),
-            @RenderingOption(key = StringRenderingConstants.GROUP_NAME, value = "Configure the destination server")
-    })
-    String sapSystemNumber;
-
-    @PluginProperty(title = "Client", description = "Specifies the SAP client", defaultValue = "100", required = true)
-    @SelectValues(values = {"100", "110"})
-    @RenderingOptions({
-            @RenderingOption(key = StringRenderingConstants.GROUPING, value = "SECONDARY"),
-            @RenderingOption(key = StringRenderingConstants.GROUP_NAME, value = "Configure the destination server")
-    })
-    String sapClient;
-
-    @PluginProperty(title = "User", description = "User authenticating to the SAP destination", required = true)
-    @RenderingOptions({
-            @RenderingOption(key = StringRenderingConstants.GROUPING, value = "SECONDARY"),
-            @RenderingOption(key = StringRenderingConstants.GROUP_NAME, value = "Configure the destination server")
-    })
-    String sapUser;
-
-    @PluginProperty(title = "Source Job Name", description = "Source job name", required = true)
-    @RenderingOptions({
-            @RenderingOption(key = StringRenderingConstants.GROUPING, value = "SECONDARY"),
-            @RenderingOption(key = StringRenderingConstants.GROUP_NAME, value = "Copy a pre-defined SAP Job and Run")
-    })
-    String sapSourceJobName;
-
-    @PluginProperty(title = "Source Job Count", description = "Source job id", required = true)
-    @RenderingOptions({
-            @RenderingOption(key = StringRenderingConstants.GROUPING, value = "SECONDARY"),
-            @RenderingOption(key = StringRenderingConstants.GROUP_NAME, value = "Copy a pre-defined SAP Job and Run")
-    })
-    String sapSourceJobCount;
-
-    @PluginProperty(title = "New Job Name", description = "Name of new copied job", required = true)
-    @RenderingOptions({
-            @RenderingOption(key = StringRenderingConstants.GROUPING, value = "SECONDARY"),
-            @RenderingOption(key = StringRenderingConstants.GROUP_NAME, value = "Copy a pre-defined SAP Job and Run")
-    })
-    String sapNewJobName;
-
-    /**
-     * Here the plugin executes a set of commands on the given remote node based on a validation
-     * <p/>
-     * The {@link GeneratedScriptBuilder} provides a factory for returning the correct type.
-     */
-    public GeneratedScript generateScript(final PluginStepContext context, final Map<String, Object> configuration, final INodeEntry entry) {
-        if (validateForm(context)) {
-            final String connector = connectorName.concat("-").concat(connectorVersion).concat(".tar.gz");
-            return GeneratedScriptBuilder.command(
-                    "if [ -f ".concat(connector).concat(" ]; then ") +
-                            "echo \"Latest connector is already available\"; " +
-                            "else rm -f ".concat(connector).concat("-*.tar.gz; ") +
-                            "echo \"Latest connector is not found - Downloading...\"; " +
-                            "curl -sk ".concat(connectorAddress).concat("/").concat(connector).concat(" -o ").concat(connector).concat("; ") +
-                            "fi",
-                    "&&", "tar -zxf ".concat(connector),
-                    "&&", "echo Preparing environment",
-                    "&&", "export ENV_SAP_HOST=".concat(sapExecutionTarget)
-                            .concat(" && export ENV_SAP_USER=").concat(sapUser)
-                            .concat(" && export ENV_SAP_SYSNR=").concat(sapSystemNumber)
-                            .concat(" && export ENV_SAP_CLIENT=").concat(sapClient)
-                            .concat(" && export ENV_SAP_JCO_PATH=").concat("`pwd`/binary/sapjco3")
-                            .concat(" && export ENV_SAP_PASSWORD=").concat(SAP_JCO_PASSWORD),
-                    "&&", "./binary/".concat(connectorName).concat("/bin/").concat(connectorName).concat(" R3 ").concat(sapSourceJobName).concat(" ").concat(sapSourceJobCount).concat(" ").concat(sapNewJobName)
-            );
-        }
-        else
-            return GeneratedScriptBuilder.command("exit 1");
+  public void executeStep(PluginStepContext context, final Map<String, Object> configuration) throws StepException {
+    SapManager sapManager = new SapManager();
+    if (context.getDataContextObject().getData().get("option").isEmpty()
+    || context.getDataContextObject().getData().get("option") == null) {
+      throw new StepException("Missing connection password", Reason.BadRequest);
     }
-
-    /**
-     * Here the plugin validates the inputs from the user
-     */
-    public Boolean validateForm(final PluginStepContext context) {
-        if (context.getExecutionContext().getDataContext().get("secureOption") == null) {
-            System.out.println("No required options defined in rundeck");
-            LoggerFactory.getLogger(SERVICE_PROVIDER_NAME).error("No required options defined in rundeck - "
-                    .concat(context.getExecutionContext().getDataContext().get("job").get("project")).concat(" - ")
-                    .concat(context.getExecutionContext().getDataContext().get("job").get("name")));
-            return false;
-        }
-        else {
-            if (context.getExecutionContext().getDataContext().get("secureOption").entrySet().iterator().next().getValue() == null) {
-                System.out.println("No password found in rundeck options");
-                LoggerFactory.getLogger(SERVICE_PROVIDER_NAME).error("No password found in rundeck options - "
-                        .concat(context.getExecutionContext().getDataContext().get("job").get("project")).concat(" - ")
-                        .concat(context.getExecutionContext().getDataContext().get("job").get("name")));
-                return false;
-            }
-        }
-        SAP_JCO_PASSWORD = context.getExecutionContext().getDataContext().get("secureOption").entrySet().iterator().next().getValue();
-        return true;
+    try {
+      configuration.put("sapJcoPassword", context.getDataContextObject().getData().get("option").entrySet().iterator().next().getValue());
+      sapManager.SapConnector(configuration);
+    } catch (Exception e) {
+      throw new StepException(e.getMessage(), Reason.InternalServerError);
     }
+  }
 
-
-
+  static enum Reason implements FailureReason {
+    BadRequest, InternalServerError
+  }
 }
