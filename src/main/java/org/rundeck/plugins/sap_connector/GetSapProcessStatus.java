@@ -16,7 +16,7 @@ import org.rundeck.plugins.configurations.PluginConfig;
 public class GetSapProcessStatus {
 
   private static JCoFunction function = null;
-  private final static int sleepTime = 5000;
+  private static final int sleepTime = 5000;
   private static PluginConfig config = new PluginConfig();
 
   public static void getSapJobStatus(JCoDestination destination, String jobName, String jobId, String user) throws Exception {

@@ -12,8 +12,6 @@ import com.dtolabs.rundeck.plugins.step.PluginStepContext;
 import com.dtolabs.rundeck.plugins.step.StepPlugin;
 import com.dtolabs.rundeck.plugins.util.DescriptionBuilder;
 import com.dtolabs.rundeck.plugins.util.PropertyBuilder;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import org.rundeck.plugins.sap_connector.SapManager;
 

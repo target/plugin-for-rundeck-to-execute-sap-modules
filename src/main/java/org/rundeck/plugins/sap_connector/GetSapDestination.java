@@ -7,19 +7,22 @@ import com.sap.conn.jco.ext.DestinationDataProvider;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Properties;
+import org.rundeck.plugins.configurations.PluginConfig;
+
 /*
  * @author z00294j
  * created on Nov 30 2018
  */
 public class GetSapDestination {
 
-  static JCoDestination destination = null;
+  private static JCoDestination destination = null;
+  private static PluginConfig config = new PluginConfig();
+  private static final String DEST = "RFC";
 
   public static JCoDestination getDestination(String executionTarget, String systemNumber, String client, String user,
                                               String password, String clientLanguage, String poolCapacity,
                                               String peakLimit) throws Exception {
-    System.setProperty("java.library.path", "/Users/z00294j/gitrepo/dsco/rundeck/rundeck-sap-plugin/darwin/sapjco3");
-    String DEST = "RFC";
+    // System.setProperty("java.library.path", config.getJcoPath());
     try {
       Properties connectProperties = new Properties() {{
         setProperty(DestinationDataProvider.JCO_ASHOST, executionTarget);
@@ -27,9 +30,9 @@ public class GetSapDestination {
         setProperty(DestinationDataProvider.JCO_CLIENT, client);
         setProperty(DestinationDataProvider.JCO_USER, user);
         setProperty(DestinationDataProvider.JCO_PASSWD, password);
-        setProperty(DestinationDataProvider.JCO_LANG, "en");
-        setProperty(DestinationDataProvider.JCO_POOL_CAPACITY, "3");
-        setProperty(DestinationDataProvider.JCO_PEAK_LIMIT, "10");
+        setProperty(DestinationDataProvider.JCO_LANG, clientLanguage);
+        setProperty(DestinationDataProvider.JCO_POOL_CAPACITY, poolCapacity);
+        setProperty(DestinationDataProvider.JCO_PEAK_LIMIT, peakLimit);
       }};
       createDataFile(DEST, "jcoDestination", connectProperties, executionTarget);
       destination = JCoDestinationManager.getDestination(DEST);
