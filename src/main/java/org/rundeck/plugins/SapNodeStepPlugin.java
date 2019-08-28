@@ -29,7 +29,6 @@ public class SapNodeStepPlugin implements StepPlugin, Describable {
 
   /**
    * Defines configuration properties of the sap plugin
-   *
    * @return the Description type configuration of the plugin
    */
   public Description getDescription() {
@@ -171,7 +170,6 @@ public class SapNodeStepPlugin implements StepPlugin, Describable {
 
   /**
    * A base method for various failure reasons
-   *
    * @return A single word reason
    */
   static enum Reason implements FailureReason {

@@ -22,7 +22,8 @@ dependencies {
   compile(group:'org.slf4j', name: 'slf4j-api', version: '1.7.25')
   compile(group: 'commons-io', name: 'commons-io', version: '2.4')
   compile(group:'org.rundeck', name: 'rundeck-core', version: '3.0.9-20181127')
-  compile files("darwin/sapjco3/sapjco3.jar")
+  compile group: 'org.hibersap', name: 'sapjco3', version:'3.0'
+//  compile files("/path/to/official/sapjco3.jar")
 }
 
 task copyToLib(type: Copy) {
