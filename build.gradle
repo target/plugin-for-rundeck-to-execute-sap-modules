@@ -16,14 +16,14 @@ configurations{
 
 repositories {
   mavenCentral()
+  maven { url 'http://maven.mit.edu/nexus/content/repositories/public' }
 }
 
 dependencies {
-  compile(group:'org.slf4j', name: 'slf4j-api', version: '1.7.25')
+  compile(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25')
   compile(group: 'commons-io', name: 'commons-io', version: '2.4')
-  compile(group:'org.rundeck', name: 'rundeck-core', version: '3.0.9-20181127')
-  compile group: 'org.hibersap', name: 'sapjco3', version:'3.0'
-  compile group: 'org.hibersap', name: 'com.sap.conn.jco.sapjco3', version: '3.0.0'
+  compile(group: 'org.rundeck', name: 'rundeck-core', version: '3.0.9-20181127')
+  compile(group: 'com.sap.conn.jco', name: 'sapjco3', version: '3.0.14')
 //  compile files("/path/to/official/sapjco3.jar")
 }
 
