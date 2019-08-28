@@ -15,6 +15,11 @@ import com.dtolabs.rundeck.plugins.util.PropertyBuilder;
 import java.util.Map;
 import org.rundeck.plugins.sap_connector.SapManager;
 
+/**
+ * SapNodeStepPlugin plugin provides the capability to establish jco connections to a SAP system
+ * and copy, release and report on ABAP programs and process chains
+ *
+ */
 @Plugin(name = SapNodeStepPlugin.SERVICE_PROVIDER_NAME, service = ServiceNameConstants.WorkflowStep)
 @PluginDescription(title = SapNodeStepPlugin.PLUGIN_NAME, description = SapNodeStepPlugin.PLUGIN_DESCRIPTION)
 public class SapNodeStepPlugin implements StepPlugin, Describable {
@@ -22,6 +27,11 @@ public class SapNodeStepPlugin implements StepPlugin, Describable {
   public static final String PLUGIN_NAME = "SAP Node Step";
   public static final String PLUGIN_DESCRIPTION = "Connects to SAP systems and executes jobs";
 
+  /**
+   * Defines configuration properties of the sap plugin
+   *
+   * @return the Description type configuration of the plugin
+   */
   public Description getDescription() {
     return DescriptionBuilder.builder()
       .name(SERVICE_PROVIDER_NAME)
@@ -139,10 +149,16 @@ public class SapNodeStepPlugin implements StepPlugin, Describable {
       .build();
   }
 
+  /**
+   * Internal executeStep method to start a workflow step
+   * @param context        Runtime context information for a Step plugin
+   * @param configuration  Any configuration property values not otherwise applied to the plugin
+   * @throws StepException if an error occurs, the failureReason should indicate the reason
+   */
   public void executeStep(PluginStepContext context, final Map<String, Object> configuration) throws StepException {
     SapManager sapManager = new SapManager();
     if (context.getDataContextObject().getData().get("option").isEmpty()
-    || context.getDataContextObject().getData().get("option") == null) {
+      || context.getDataContextObject().getData().get("option") == null) {
       throw new StepException("Missing connection password", Reason.BadRequest);
     }
     try {
@@ -153,6 +169,11 @@ public class SapNodeStepPlugin implements StepPlugin, Describable {
     }
   }
 
+  /**
+   * A base method for various failure reasons
+   *
+   * @return A single word reason
+   */
   static enum Reason implements FailureReason {
     BadRequest, InternalServerError
   }

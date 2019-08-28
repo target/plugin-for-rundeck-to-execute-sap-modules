@@ -10,8 +10,8 @@ import java.util.Properties;
 import org.rundeck.plugins.configurations.PluginConfig;
 
 /*
- * @author z00294j
- * created on Nov 30 2018
+ * @author Abhinav.Sinha
+ * created on Aug 30 2019
  */
 public class GetSapDestination {
 
@@ -19,6 +19,18 @@ public class GetSapDestination {
   private static PluginConfig config = new PluginConfig();
   private static final String DEST = "RFC";
 
+  /**
+   * Creates a connection pool to an SAP system
+   * @param executionTarget The physical destination of a function call. It contains all required properties in order to connect to an SAP system
+   * @param systemNumber    Client system number
+   * @param client          Client id
+   * @param user            An authorized user to issue the connection
+   * @param password        An authorized user's password
+   * @param clientLanguage  Client language f.e. en, fr
+   * @param poolCapacity    Pool capacity of the connection f.e. 3
+   * @param peakLimit       The peak limit of the connection pool f.e. 10
+   * @throws java.lang.Exception if an error occurs
+   */
   public static JCoDestination getDestination(String executionTarget, String systemNumber, String client, String user,
                                               String password, String clientLanguage, String poolCapacity,
                                               String peakLimit) throws Exception {
@@ -45,6 +57,14 @@ public class GetSapDestination {
     }
   }
 
+  /**
+   * Creates the data file to establish a RFC connection
+   * @param name            The data file name
+   * @param suffix          Suffix for the data file name
+   * @param properties      Connection properties
+   * @param executionTarget The physical destination of a function call. It contains all required properties in order to connect to an SAP system
+   * @throws java.lang.Exception if an error occurs
+   */
   public static void createDataFile(String name, String suffix, Properties properties, String executionTarget) throws Exception {
     File cfg = new File(name + "." + suffix);
     try {

@@ -10,8 +10,8 @@ import com.sap.conn.jco.ext.DestinationDataProvider;
 import org.rundeck.plugins.configurations.PluginConfig;
 
 /*
- * @author z00294j
- * created on Feb 10 2019
+ * @author Abhinav.Sinha
+ * created on Aug 30 2019
  */
 public class GetSapProcessStatus {
 
@@ -19,6 +19,14 @@ public class GetSapProcessStatus {
   private static final int sleepTime = 5000;
   private static PluginConfig config = new PluginConfig();
 
+  /**
+   * Issues job status BAPI function module to get the latest execution status of a job
+   * @param destination  The physical destination of a function call. It contains all required properties in order to connect to an SAP system.
+   * @param jobName      ABAP programme job name to be reported
+   * @param jobId        ABAP programme job id (job count) to be reported
+   * @param user         The user authorized to release the job
+   * @throws java.lang.Exception if an error occurs
+   */
   public static void getSapJobStatus(JCoDestination destination, String jobName, String jobId, String user) throws Exception {
     try {
       JCoContext.begin(destination);

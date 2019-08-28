@@ -9,14 +9,22 @@ import com.sap.conn.jco.JCoParameterFieldIterator;
 import org.rundeck.plugins.configurations.PluginConfig;
 
 /*
- * @author z00294j
- * created on Nov 30 2018
+ * @author Abhinav.Sinha
+ * created on Aug 30 2019
  */
 public class ReleaseSapJob {
 
   private static JCoFunction function = null;
   private static PluginConfig config = new PluginConfig();
 
+  /**
+   * Issues job start BAPI function module to start a job immediately
+   * @param destination  The physical destination of a function call. It contains all required properties in order to connect to an SAP system.
+   * @param jobName      ABAP programme job name to be released
+   * @param jobId        ABAP programme job id (job count) to be released
+   * @param user         The user authorized to release the job
+   * @throws java.lang.Exception if an error occurs
+   */
   public static void releaseJob(JCoDestination destination, String jobName, String jobId, String user) throws Exception {
     try {
       JCoContext.begin(destination);

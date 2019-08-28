@@ -11,14 +11,23 @@ import java.util.Map;
 import org.rundeck.plugins.configurations.PluginConfig;
 
 /*
- * @author z00294j
- * created on Nov 30 2018
+ * @author Abhinav.Sinha
+ * created on Aug 30 2019
  */
 public class CopySapJob {
 
   private static JCoFunction function = null;
   private static PluginConfig config = new PluginConfig();
 
+  /**
+   * Issues job copy BAPI function module to copy a pre-defined SAP job
+   * @param destination       The physical destination of a function call. It contains all required properties in order to connect to an SAP system.
+   * @param sapSourceJobName  ABAP programme source job name to be copied
+   * @param sapSourceJobCount ABAP programme source job id (job count) to be copied
+   * @param sapNewJobName     The target job name
+   * @param user              The user authorized to release the job
+   * @throws java.lang.Exception if an error occurs
+   */
   public static Map<String, String> copyJob(JCoDestination destination, String sapSourceJobName, String sapSourceJobCount,
                                             String sapNewJobName, String user) throws Exception {
     Map<String, String> newJob = new HashMap<String, String>();

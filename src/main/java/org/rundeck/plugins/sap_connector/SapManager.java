@@ -4,8 +4,19 @@ import com.sap.conn.jco.JCoDestination;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+ * @author Abhinav.Sinha
+ * created on Aug 30 2019
+ */
 public class SapManager {
 
+  /**
+   * Triggers the destination connection with the execution target and
+   * issues copy and release BAPI function modules to interact with
+   * background ABAP programs and process chains
+   * @param configuration  Any configuration property values not otherwise applied to the plugin
+   * @throws java.lang.Exception if an error occurs
+   */
   public void SapConnector(Map<String, Object> configuration) throws Exception {
     Map<String, String> newJob = new HashMap<String, String>();
     GetSapDestination dest = new GetSapDestination();
