@@ -19,17 +19,17 @@ No restart of rundeck is required
 
 ## Setup
 
-##### Edit a job and select SAP Workflow Step.
+Edit a job and select SAP Workflow Step.
 
 <img src="src/main/resources/rundeck-sap-workflow-step.png" style="width:50%;">
 
 
-#### Fill out the input form to connect to a particular SAP destination and release jobs. All the fields are mandatory.
+Fill out the input form to connect to a particular SAP destination and release jobs. All the fields are mandatory.
 
 <img src="src/main/resources/rundeck-sap-plugin-step.png" style="width:50%;">
 
 
-#### The connection requires a client password which you can supply via rundeck job options. Refer this screenshot to create an option whose input type can either be a Plain-Text or Secure (needs to be uploaded via Rundeck Key Storage)
+The connection requires a client password which you can supply via rundeck job options. Refer this screenshot to create an option whose input type can either be a Plain-Text or Secure (needs to be uploaded via Rundeck Key Storage)
  
 <img src="src/main/resources/rundeck-options.png" style="width:50%;">
 

@@ -16,15 +16,15 @@ import java.util.Map;
 import org.rundeck.plugins.sap_connector.SapManager;
 
 /**
- * SapNodeStepPlugin plugin provides the capability to establish jco connections to a SAP system
+ * SapWorkflowStepPlugin plugin provides the capability to establish jco connections to a SAP system
  * and copy, release and report on ABAP programs and process chains
  *
  */
-@Plugin(name = SapNodeStepPlugin.SERVICE_PROVIDER_NAME, service = ServiceNameConstants.WorkflowStep)
-@PluginDescription(title = SapNodeStepPlugin.PLUGIN_NAME, description = SapNodeStepPlugin.PLUGIN_DESCRIPTION)
-public class SapNodeStepPlugin implements StepPlugin, Describable {
-  public static final String SERVICE_PROVIDER_NAME = "SapNodeStepPlugin";
-  public static final String PLUGIN_NAME = "SAP Node Step";
+@Plugin(name = SapWorkflowStepPlugin.SERVICE_PROVIDER_NAME, service = ServiceNameConstants.WorkflowStep)
+@PluginDescription(title = SapWorkflowStepPlugin.PLUGIN_NAME, description = SapWorkflowStepPlugin.PLUGIN_DESCRIPTION)
+public class SapWorkflowStepPlugin implements StepPlugin, Describable {
+  public static final String SERVICE_PROVIDER_NAME = "SapWorkflowStepPlugin";
+  public static final String PLUGIN_NAME = "SAP Workflow Step";
   public static final String PLUGIN_DESCRIPTION = "Connects to SAP systems and executes jobs";
 
   /**

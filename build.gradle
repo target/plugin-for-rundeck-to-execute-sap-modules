@@ -1,5 +1,5 @@
-ext.pluginClassNames = 'org.rundeck.plugins.SapNodeStepPlugin'
-ext.pluginName = 'SAP Node Step Plugin'
+ext.pluginClassNames = 'org.rundeck.plugins.SapWorkflowStepPlugin'
+ext.pluginName = 'SAP Workflow Step Plugin'
 ext.pluginDescription = 'Copy and release pre-defined SAP jobs'
 
 apply plugin: 'java'
