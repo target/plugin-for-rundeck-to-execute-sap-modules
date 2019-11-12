@@ -1,4 +1,4 @@
-# rundeck sap plugin
+# plugin-for-rundeck-to-execute-sap-modules
 
 This plugin has been designed to connect to SAP systems and trigger ABAP programs and process chains. This plugin executes BAPI function modules to copy a pre-defined SAP job, release the newly created SAP job and report their statuses.
 
